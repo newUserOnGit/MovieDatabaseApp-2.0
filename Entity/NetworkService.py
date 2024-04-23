@@ -1,5 +1,6 @@
 import requests
 
+
 class UNOGSRequest:
     def __init__(self):
         self.url = "https://unogs-unogs-v1.p.rapidapi.com/search/titles"
@@ -11,6 +12,7 @@ class UNOGSRequest:
     def make_request(self):
         response = requests.get(self.url, headers=self.headers)
         return response.json()
+
 
 # Protocol for accessing the UNOGSRequest class in other files
 class UNOGSRequestProtocol:
