@@ -40,6 +40,18 @@ class DatabaseHelper:
 		return conn, cursor
 
 	def write_to_database(data, conn, cursor):
+		def create_unique_index(cursor):
+			cursor.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_kinopoisk_id ON movies (kinopoiskId)')
+
+		# Подключаемся к базе данных SQLite
+		conn, cursor = DatabaseHelper.connect_to_database()
+
+		# Создаем уникальный индекс для столбца kinopoiskId
+		create_unique_index(cursor)
+
+		# Получаем список kinopoiskId всех фильмов из базы данных
+		cursor.execute("SELECT kinopoiskId FROM movies")
+
 		for item in data['items']:
 			kinopoiskId = item.get('kinopoiskId')
 			imdbId = item.get('imdbId')
@@ -58,13 +70,16 @@ class DatabaseHelper:
 			logoUrl = item.get('logoUrl')
 			description = item.get('description')
 			ratingAgeLimits = item.get('ratingAgeLimits')
-			cursor.execute('''INSERT INTO movies (
-							kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
-							ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
-							coverUrl, logoUrl, description, ratingAgeLimits
-							) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-						(kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
-						ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
-						coverUrl, logoUrl, description, ratingAgeLimits))
-		conn.commit()
 
+			cursor.execute('''INSERT OR IGNORE INTO movies (
+						kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres, 
+	                    ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview, 
+	                    coverUrl, logoUrl, description, ratingAgeLimits) 
+	                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+			(kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
+				        ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
+				        coverUrl, logoUrl, description, ratingAgeLimits
+			            ))
+
+		conn.commit()
+		conn.close()
