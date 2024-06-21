@@ -3,11 +3,9 @@ import requests
 
 class UNOGSRequest:
     def __init__(self):
-        self.url = "https://unogs-unogs-v1.p.rapidapi.com/search/titles"
-        self.headers = {
-            "X-RapidAPI-Key": "a5402757a6msh682d9fc7beb97aep1c6e44jsn4c05f2d6efd4",
-            "X-RapidAPI-Host": "unogs-unogs-v1.p.rapidapi.com"
-        }
+        self.url = "https://kinopoiskapiunofficial.tech/api/v2.2/films/collections?type=TOP_POPULAR_ALL&page=1"
+        self.headers = {"accept": "application/json",
+                        "X-API-KEY": "d4348626-8046-4ca8-945d-44838d1aecdc"}
 
     def make_request(self):
         response = requests.get(self.url, headers=self.headers)

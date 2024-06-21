@@ -1,48 +1,72 @@
 import json
 import sqlite3
-from NetworkService import UNOGSRequestProtocol as request
 import os
+from Entity.NetworkService import UNOGSRequestProtocol
+
 
 
 class DatabaseHelper:
-    @staticmethod
-    def open_json_file():
-        request_network_service = request()
-        response_network_service = request_network_service.get_data()
-        with open(response_network_service, 'r') as file:
-            return json.load(file)
+	@staticmethod
+	def open_json_file():
+		request_network_service = UNOGSRequestProtocol()
+		data = request_network_service.get_data()
+		return data
 
-    @staticmethod
-    def connect_to_database():
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(base_dir, 'MovieDatabaseApp-2.0.db')
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+	@staticmethod
+	def connect_to_database():
 
-        cursor.execute('''CREATE TABLE IF NOT EXISTS movies (
-                    _id TEXT,
-                    overview TEXT,
-                    genres TEXT,
-                    poster_path TEXT,
-                    title TEXT,
-                    release_date TEXT
-                )''')
+		base_dir = os.path.dirname(os.path.abspath(__file__))
+		db_path = os.path.join(base_dir, 'MovieDatabaseApp-2.0.db')
+		conn = sqlite3.connect(db_path)
+		cursor = conn.cursor()
+		cursor.execute(
+			'''CREATE TABLE IF NOT EXISTS movies ( 
+			kinopoiskId TEXT,
+			imdbId TEXT,
+			nameRu TEXT,
+			nameEn TEXT,
+			nameOriginal TEXT,
+			countries TEXT,
+			genres TEXT,
+			ratingKinopoisk TEXT,
+			ratingImdb TEXT,
+			year INTEGER,
+			type TEXT,
+			posterUrl TEXT,
+			posterUrlPreview TEXT,
+			coverUrl TEXT,
+			logoUrl TEXT,
+			description TEXT,
+			ratingAgeLimits TEXT )''')
 
-        return conn, cursor
+		return conn, cursor
 
-    @staticmethod
-    def write_to_database(data, conn, cursor):
-        for item in data:
-            _id = item.get('_id')
-            overview = item.get('overview')
-            genres = ', '.join(item.get('genres', []))
-            poster_path = item.get('poster_path')
-            title = item.get('title')
-            release_date = item.get('release_date')
-
-            cursor.execute('''INSERT INTO movies (_id, overview, genres, poster_path, title, release_date)
-                              VALUES (?, ?, ?, ?, ?, ?)''', (_id, overview, genres, poster_path, title, release_date))
-
-        # Сохраняем изменения в базе данных и закрываем соединение
-        conn.commit()
-        conn.close()
+	def write_to_database(data, conn, cursor):
+		for item in data['items']:
+			kinopoiskId = item.get('kinopoiskId')
+			imdbId = item.get('imdbId')
+			nameRu = item.get('nameRu')
+			nameEn = item.get('nameEn')
+			nameOriginal = item.get('nameOriginal')
+			countries = ', '.join([country['country'] for country in item.get('countries', [])])
+			genres = ', '.join([genre['genre'] for genre in item.get('genres', [])])
+			ratingKinopoisk = item.get('ratingKinopoisk')
+			ratingImdb = item.get('ratingImdb')
+			year = item.get('year')
+			type = item.get('type')
+			posterUrl = item.get('posterUrl')
+			posterUrlPreview = item.get('posterUrlPreview')
+			coverUrl = item.get('coverUrl')
+			logoUrl = item.get('logoUrl')
+			description = item.get('description')
+			ratingAgeLimits = item.get('ratingAgeLimits')
+			cursor.execute('''INSERT INTO movies (
+							kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
+							ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
+							coverUrl, logoUrl, description, ratingAgeLimits
+							) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+		(kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
+		ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
+		coverUrl, logoUrl, description, ratingAgeLimits))
+		conn.commit()
+		conn.close()
