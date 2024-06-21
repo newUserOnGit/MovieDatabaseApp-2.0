@@ -4,7 +4,6 @@ import os
 from Entity.NetworkService import UNOGSRequestProtocol
 
 
-
 class DatabaseHelper:
 	@staticmethod
 	def open_json_file():
@@ -14,7 +13,6 @@ class DatabaseHelper:
 
 	@staticmethod
 	def connect_to_database():
-
 		base_dir = os.path.dirname(os.path.abspath(__file__))
 		db_path = os.path.join(base_dir, 'MovieDatabaseApp-2.0.db')
 		conn = sqlite3.connect(db_path)
@@ -65,8 +63,8 @@ class DatabaseHelper:
 							ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
 							coverUrl, logoUrl, description, ratingAgeLimits
 							) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-		(kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
-		ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
-		coverUrl, logoUrl, description, ratingAgeLimits))
+						(kinopoiskId, imdbId, nameRu, nameEn, nameOriginal, countries, genres,
+						ratingKinopoisk, ratingImdb, year, type, posterUrl, posterUrlPreview,
+						coverUrl, logoUrl, description, ratingAgeLimits))
 		conn.commit()
-		conn.close()
+
